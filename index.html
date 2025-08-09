@@ -1,229 +1,604 @@
-<!--
-Brainma - Starter Website (index.html)
-
-How to use:
-1. Open this file in the canvas preview or save as index.html locally.
-2. Edit the `DATA` array below to add your videos, books, and past papers.
-3. Put media files (videos, PDFs, images) in a `media/` folder in the repo and update the `url` fields.
-4. To host on GitHub Pages: create a new GitHub repo, push this file as index.html (and media/), then enable Pages in repo settings.
-
-Structure built in this single-file starter:
-- Top navigation: choose Grade (9-12) and Resource type (Videos, Books, PastPapers, Sheets)
-- Content area lists resources from the DATA array
-- Video resources have extra `unit` and `subject` fields and support filtering by unit & subject
-- Simple modal viewer for previewing videos (HTML5) and PDFs (embedded)
-- Download buttons for each resource
-
-This is intentionally plain HTML/CSS/JS (no frameworks) so it's GitHub Pages-friendly and easy to extend.
---><!doctype html>
-
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Brainma — High School Library (Starter)</title>
-  <style>
-    :root{--accent:#0b6ef6;--bg:#f6f8fb;--card:#fff;--muted:#6b7280}
-    *{box-sizing:border-box}
-    body{font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:0;background:var(--bg);color:#0f172a}
-    header{background:linear-gradient(90deg,#ffffffcc, #f3f7ff);backdrop-filter:blur(6px);padding:18px 20px;display:flex;gap:12px;align-items:center}
-    .brand{font-weight:700;font-size:18px;color:var(--accent)}
-    .controls{display:flex;gap:10px;align-items:center;margin-left:auto}
-    select,input[type=search]{padding:8px 10px;border-radius:8px;border:1px solid #e6edf6;background:#fff}
-    main{padding:20px;max-width:1100px;margin:18px auto}
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
-    .card{background:var(--card);padding:12px;border-radius:12px;box-shadow:0 6px 18px rgba(12,20,40,0.06);display:flex;flex-direction:column;gap:8px}
-    .thumb{height:140px;border-radius:8px;background:#eef3ff;display:flex;align-items:center;justify-content:center;overflow:hidden}
-    .thumb img, .thumb video{width:100%;height:100%;object-fit:cover}
-    .meta{font-size:13px;color:var(--muted)}
-    .title{font-weight:600}
-    .row{display:flex;gap:8px}
-    button{background:var(--accent);color:#fff;padding:8px 10px;border:0;border-radius:8px;cursor:pointer}
-    .btn-ghost{background:transparent;border:1px solid #e6edf6;color:var(--accent)}
-    .filters{display:flex;gap:8px;align-items:center}
-    .small{font-size:12px;padding:6px 8px}
-    /* Modal */
-    .modal-back{position:fixed;inset:0;background:rgba(2,6,23,0.5);display:none;align-items:center;justify-content:center;padding:20px}
-    .modal{background:#fff;width:100%;max-width:900px;border-radius:12px;padding:14px;box-shadow:0 20px 60px rgba(2,6,23,0.4)}
-    .modal .close{float:right;border:0;background:transparent;font-size:18px}
-    footer{max-width:1100px;margin:30px auto;color:var(--muted);font-size:13px;text-align:center}
-    @media (max-width:600px){.controls{flex-wrap:wrap}.thumb{height:130px}}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brainma - Educational Resources for High School</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* CSS Styles */
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #166088;
+            --accent-color: #4fc3f7;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+
+        a {
+            text-decoration: none;
+            color: var(--primary-color);
+        }
+
+        .btn {
+            display: inline-block;
+            background: var(--primary-color);
+            color: #fff;
+            padding: 0.5rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        /* Header Styles */
+        header {
+            background: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-container h1 {
+            color: var(--primary-color);
+            font-size: 2rem;
+        }
+
+        .logo-container p {
+            color: var(--dark-color);
+            font-size: 0.9rem;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-left: 1.5rem;
+        }
+
+        nav ul li a {
+            color: var(--dark-color);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav ul li a:hover, nav ul li a.active {
+            color: var(--primary-color);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(74, 111, 165, 0.8), rgba(22, 96, 136, 0.8)), 
+                        url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') no-repeat center center/cover;
+            height: 60vh;
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: white;
+            padding: 0 2rem;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .grade-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        /* Resources Section */
+        .featured-resources {
+            padding: 3rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .featured-resources h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--secondary-color);
+            font-size: 2rem;
+        }
+
+        .resource-filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .resource-filters select, .resource-filters button {
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .resource-filters button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .resource-filters button:hover {
+            background: var(--secondary-color);
+        }
+
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .resource-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .resource-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .resource-img {
+            height: 180px;
+            overflow: hidden;
+        }
+
+        .resource-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .resource-info {
+            padding: 1.5rem;
+        }
+
+        .resource-info h3 {
+            margin-bottom: 0.5rem;
+            color: var(--secondary-color);
+        }
+
+        .resource-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .resource-type {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .type-video {
+            background: #ffeb3b;
+            color: #333;
+        }
+
+        .type-book {
+            background: #4caf50;
+            color: white;
+        }
+
+        .type-exam {
+            background: #f44336;
+            color: white;
+        }
+
+        .download-btn {
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: 0.5rem;
+            background: var(--accent-color);
+            color: white;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .download-btn:hover {
+            background: #03a9f4;
+        }
+
+        /* Footer Styles */
+        footer {
+            background: var(--dark-color);
+            color: white;
+            padding: 2rem 0 0;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .footer-section {
+            flex: 1;
+            min-width: 250px;
+            margin-bottom: 2rem;
+            padding: 0 1rem;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1rem;
+            color: var(--accent-color);
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section ul li a {
+            color: #ddd;
+        }
+
+        .footer-section ul li a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                text-align: center;
+                padding: 1rem;
+            }
+
+            nav ul {
+                margin-top: 1rem;
+                justify-content: center;
+            }
+
+            nav ul li {
+                margin: 0 0.5rem;
+            }
+
+            .hero {
+                height: auto;
+                padding: 3rem 1rem;
+            }
+
+            .hero h2 {
+                font-size: 2rem;
+            }
+
+            .resource-filters {
+                flex-direction: column;
+            }
+
+            .resources-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <div class="brand">Brainma</div>
-    <div style="margin-left:12px;color:var(--muted)">High-school library — Grades 9 to 12</div><div class="controls">
-  <label for="grade" class="meta">Grade</label>
-  <select id="grade">
-    <option value="all">All</option>
-    <option value="9">Grade 9</option>
-    <option value="10">Grade 10</option>
-    <option value="11">Grade 11</option>
-    <option value="12">Grade 12</option>
-  </select>
-
-  <label for="rtype" class="meta">Resource</label>
-  <select id="rtype">
-    <option value="videos">Videos</option>
-    <option value="books">Books</option>
-    <option value="papers">PastPapers</option>
-    <option value="sheets">Sheets</option>
-  </select>
-
-  <div class="filters" id="video-filters" style="display:none">
-    <select id="subject-filter"><option value="all">All Subjects</option></select>
-    <select id="unit-filter"><option value="all">All Units</option></select>
-  </div>
-
-  <input type="search" id="search" placeholder="Search title, subject..." />
-  <button id="add-sample" class="small btn-ghost">+ Sample data</button>
-</div>
-
-  </header>  <main>
-    <section id="list-area">
-      <div class="grid" id="resource-grid"></div>
-    </section>
-  </main>  <div class="modal-back" id="modal-back">
-    <div class="modal" role="dialog">
-      <button class="close" id="modal-close">✕</button>
-      <div id="modal-content"></div>
-    </div>
-  </div>  <footer>Made with ❤️ for students • Edit DATA inside this file to add resources • Host on GitHub Pages</footer>  <script>
-    // ----------------------
-    // DATA: add your resources here
-    // Each item: id, type: videos|books|papers|sheets, title, grade, subject, unit (videos only), url, thumbnail
-    // ----------------------
-    let DATA = [
-      // sample item
-      // {id:1,type:'videos',title:'Photosynthesis - Unit 1',grade:9,subject:'Biology',unit:'1',url:'media/photosynthesis.mp4',thumbnail:'media/thumb1.jpg'},
-    ];
-
-    // Helper: get unique values
-    const uniq = (arr) => [...new Set(arr.filter(Boolean))];
-
-    // DOM refs
-    const gradeEl = document.getElementById('grade');
-    const rtypeEl = document.getElementById('rtype');
-    const grid = document.getElementById('resource-grid');
-    const searchEl = document.getElementById('search');
-    const modalBack = document.getElementById('modal-back');
-    const modalContent = document.getElementById('modal-content');
-    const modalClose = document.getElementById('modal-close');
-    const videoFilters = document.getElementById('video-filters');
-    const subjectFilter = document.getElementById('subject-filter');
-    const unitFilter = document.getElementById('unit-filter');
-    const addSample = document.getElementById('add-sample');
-
-    // Render resources according to filters
-    function render(){
-      const grade = gradeEl.value;
-      const type = rtypeEl.value;
-      const q = searchEl.value.trim().toLowerCase();
-
-      // show video extra filters only for videos
-      videoFilters.style.display = (type === 'videos') ? 'flex' : 'none';
-
-      let items = DATA.filter(it => it.type === type);
-      if(grade !== 'all') items = items.filter(it => String(it.grade) === String(grade));
-      if(q) items = items.filter(it => (it.title+ ' ' + (it.subject||'')).toLowerCase().includes(q));
-
-      // apply video-specific filters
-      if(type === 'videos'){
-        const subj = subjectFilter.value;
-        const unit = unitFilter.value;
-        if(subj && subj !== 'all') items = items.filter(it => it.subject === subj);
-        if(unit && unit !== 'all') items = items.filter(it => it.unit === unit);
-      }
-
-      grid.innerHTML = items.map(itemCard).join('') || '<div style="grid-column:1/-1;color:var(--muted);padding:20px;background:#fff;border-radius:12px;">No resources found. Add some in DATA or try another filter.</div>';
-    }
-
-    function itemCard(it){
-      const thumb = it.thumbnail ? `<img src="${it.thumbnail}" alt="thumb">` : `<div style="padding:12px;color:var(--muted)">${it.type.toUpperCase()}</div>`;
-      return `
-      <article class="card">
-        <div class="thumb">${thumb}</div>
-        <div class="title">${escapeHtml(it.title)}</div>
-        <div class="meta">Grade ${it.grade} • ${it.subject || '—'} ${it.unit? '• Unit ' + it.unit : ''}</div>
-        <div class="row" style="margin-top:auto">
-          <button onclick="viewResource(${it.id})">Preview</button>
-          <a href="${it.url}" download class="small btn-ghost" style="text-decoration:none;padding:8px 10px;border-radius:8px;align-self:center">Download</a>
+    <header>
+        <div class="logo-container">
+            <h1>Brainma</h1>
+            <p>Your ultimate high school learning companion</p>
         </div>
-      </article>`;
-    }
+        <nav>
+            <ul>
+                <li><a href="#" class="active">Home</a></li>
+                <li><a href="#grade9">Grade 9</a></li>
+                <li><a href="#grade10">Grade 10</a></li>
+                <li><a href="#grade11">Grade 11</a></li>
+                <li><a href="#grade12">Grade 12</a></li>
+                <li><a href="#about">About</a></li>
+            </ul>
+        </nav>
+    </header>
 
-    // escape for safety
-    function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=> ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"})[c]); }
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <h2>Access Quality Educational Resources</h2>
+                <p>Videos, textbooks, past exam papers and more for Grades 9-12</p>
+                <div class="grade-buttons">
+                    <a href="#grade9" class="btn">Grade 9</a>
+                    <a href="#grade10" class="btn">Grade 10</a>
+                    <a href="#grade11" class="btn">Grade 11</a>
+                    <a href="#grade12" class="btn">Grade 12</a>
+                </div>
+            </div>
+        </section>
 
-    // Preview in modal: if video -> <video>, if pdf -> embed, if other -> link
-    function viewResource(id){
-      const it = DATA.find(x=>x.id===id);
-      if(!it) return alert('Resource not found');
-      let html='';
-      if(it.type === 'videos'){
-        html = `
-          <h3 style="margin-top:0">${escapeHtml(it.title)}</h3>
-          <video controls style="width:100%;max-height:60vh" src="${it.url}"></video>
-          <p class="meta">Subject: ${it.subject || '—'} • Grade ${it.grade} • Unit ${it.unit || '—'}</p>
-        `;
-      } else if(it.url && it.url.endsWith('.pdf')){
-        html = `
-          <h3 style="margin-top:0">${escapeHtml(it.title)}</h3>
-          <iframe src="${it.url}" style="width:100%;height:70vh;border:0"></iframe>
-        `;
-      } else {
-        html = `
-          <h3 style="margin-top:0">${escapeHtml(it.title)}</h3>
-          <p class="meta">Type: ${it.type}</p>
-          <p><a href="${it.url}" target="_blank">Open resource in new tab</a></p>
-        `;
-      }
-      modalContent.innerHTML = html;
-      modalBack.style.display = 'flex';
-    }
-    modalClose.onclick = ()=> modalBack.style.display = 'none';
-    modalBack.onclick = (e)=>{ if(e.target === modalBack) modalBack.style.display='none'; }
+        <section class="featured-resources">
+            <h2>Featured Resources</h2>
+            <div class="resource-filters">
+                <select id="grade-filter">
+                    <option value="all">All Grades</option>
+                    <option value="9">Grade 9</option>
+                    <option value="10">Grade 10</option>
+                    <option value="11">Grade 11</option>
+                    <option value="12">Grade 12</option>
+                </select>
+                <select id="type-filter">
+                    <option value="all">All Types</option>
+                    <option value="video">Videos</option>
+                    <option value="book">Books</option>
+                    <option value="exam">Past Exams</option>
+                </select>
+                <select id="subject-filter">
+                    <option value="all">All Subjects</option>
+                    <option value="math">Mathematics</option>
+                    <option value="science">Science</option>
+                    <option value="english">English</option>
+                    <option value="history">History</option>
+                </select>
+                <button id="apply-filters">Apply Filters</button>
+            </div>
+            <div class="resources-grid" id="resources-container">
+                <!-- Resources will be loaded here via JavaScript -->
+            </div>
+        </section>
+    </main>
 
-    // Build subject and unit dropdowns for videos dynamically
-    function populateVideoFilters(){
-      const videos = DATA.filter(d=>d.type==='videos');
-      const subjects = uniq(videos.map(v=>v.subject)).sort();
-      const units = uniq(videos.map(v=>v.unit)).sort((a,b)=>Number(a||0)-Number(b||0));
-      subjectFilter.innerHTML = '<option value="all">All Subjects</option>' + subjects.map(s=>`<option value="${s}">${s}</option>`).join('');
-      unitFilter.innerHTML = '<option value="all">All Units</option>' + units.map(u=>`<option value="${u}">${u}</option>`).join('');
-    }
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About Brainma</h3>
+                <p>A free educational resource platform for high school students.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#grade9">Grade 9</a></li>
+                    <li><a href="#grade10">Grade 10</a></li>
+                    <li><a href="#grade11">Grade 11</a></li>
+                    <li><a href="#grade12">Grade 12</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <p>Email: support@brainma.com</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2023 Brainma. All rights reserved.</p>
+        </div>
+    </footer>
 
-    // Event listeners
-    gradeEl.addEventListener('change',render);
-    rtypeEl.addEventListener('change',()=>{ populateVideoFilters(); render(); });
-    searchEl.addEventListener('input', ()=> setTimeout(render,100));
-    subjectFilter.addEventListener('change',render);
-    unitFilter.addEventListener('change',render);
+    <script>
+        // Resource Data
+        const resources = [
+            {
+                id: 1,
+                title: "Mathematics Grade 9 - Algebra Basics",
+                grade: 9,
+                type: "video",
+                subject: "math",
+                unit: "Algebra",
+                thumbnail: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                url: "#",
+                duration: "15:30",
+                views: 1245
+            },
+            {
+                id: 2,
+                title: "Grade 10 Science Textbook",
+                grade: 10,
+                type: "book",
+                subject: "science",
+                thumbnail: "https://images.unsplash.com/photo-1544717305-2782549b5136?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                url: "#",
+                pages: 245,
+                author: "National Education Board"
+            },
+            {
+                id: 3,
+                title: "Grade 11 English 2022 Final Exam",
+                grade: 11,
+                type: "exam",
+                subject: "english",
+                thumbnail: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                url: "#",
+                year: 2022,
+                pages: 12
+            },
+            {
+                id: 4,
+                title: "History Grade 12 - World War II",
+                grade: 12,
+                type: "video",
+                subject: "history",
+                unit: "Modern History",
+                thumbnail: "https://images.unsplash.com/photo-1505664194779-8beaceb93744?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                url: "#",
+                duration: "22:15",
+                views: 876
+            },
+            {
+                id: 5,
+                title: "Mathematics Grade 10 - Geometry",
+                grade: 10,
+                type: "video",
+                subject: "math",
+                unit: "Geometry",
+                thumbnail: "https://images.unsplash.com/photo-1582139329536-e7284fece509?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                url: "#",
+                duration: "18:45",
+                views: 932
+            },
+            {
+                id: 6,
+                title: "Grade 12 Physics Past Papers (2018-2022)",
+                grade: 12,
+                type: "exam",
+                subject: "science",
+                thumbnail: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
+                url: "#",
+                year: "2018-2022",
+                pages: 48
+            }
+        ];
 
-    // Utility: add sample data for testing
-    addSample.addEventListener('click',()=>{
-      DATA = [
-        {id:1,type:'videos',title:'Photosynthesis - Unit 1',grade:9,subject:'Biology',unit:'1',url:'media/photosynthesis.mp4',thumbnail:'media/thumb1.jpg'},
-        {id:2,type:'videos',title:'Newton Laws - Unit 2',grade:10,subject:'Physics',unit:'2',url:'media/newton.mp4',thumbnail:'media/thumb2.jpg'},
-        {id:3,type:'books',title:'Mathematics Grade 9 (Algebra)',grade:9,subject:'Mathematics',url:'media/math9-algebra.pdf',thumbnail:''},
-        {id:4,type:'papers',title:'Grade 11 Past Exam 2022',grade:11,subject:'Chemistry',url:'media/chem11-2022.pdf',thumbnail:''},
-        {id:5,type:'sheets',title:'Biology Practice Sheet - Cells',grade:10,subject:'Biology',url:'media/cells-sheet.pdf',thumbnail:''}
-      ];
-      populateVideoFilters(); render();
-    });
+        // Filter and Display Functions
+        function filterResources() {
+            const gradeFilter = document.getElementById('grade-filter').value;
+            const typeFilter = document.getElementById('type-filter').value;
+            const subjectFilter = document.getElementById('subject-filter').value;
+            
+            let filteredResources = resources;
+            
+            if (gradeFilter !== 'all') {
+                filteredResources = filteredResources.filter(resource => resource.grade == gradeFilter);
+            }
+            
+            if (typeFilter !== 'all') {
+                filteredResources = filteredResources.filter(resource => resource.type === typeFilter);
+            }
+            
+            if (subjectFilter !== 'all') {
+                filteredResources = filteredResources.filter(resource => resource.subject === subjectFilter);
+            }
+            
+            displayResources(filteredResources);
+        }
 
-    // On load: render (empty until data added)
-    populateVideoFilters(); render();
+        function displayResources(resourcesToDisplay) {
+            const container = document.getElementById('resources-container');
+            container.innerHTML = '';
+            
+            if (resourcesToDisplay.length === 0) {
+                container.innerHTML = '<p class="no-results">No resources found matching your filters.</p>';
+                return;
+            }
+            
+            resourcesToDisplay.forEach(resource => {
+                const card = document.createElement('div');
+                card.className = 'resource-card';
+                
+                let typeBadge = '';
+                if (resource.type === 'video') {
+                    typeBadge = '<span class="resource-type type-video">Video</span>';
+                } else if (resource.type === 'book') {
+                    typeBadge = '<span class="resource-type type-book">Book</span>';
+                } else if (resource.type === 'exam') {
+                    typeBadge = '<span class="resource-type type-exam">Exam</span>';
+                }
+                
+                let metaInfo = '';
+                if (resource.type === 'video') {
+                    metaInfo = `<div class="resource-meta">
+                                    <span>Grade ${resource.grade}</span>
+                                    <span>${resource.duration}</span>
+                                </div>
+                                <p>Unit: ${resource.unit}</p>`;
+                } else if (resource.type === 'book') {
+                    metaInfo = `<div class="resource-meta">
+                                    <span>Grade ${resource.grade}</span>
+                                    <span>${resource.pages} pages</span>
+                                </div>
+                                <p>Author: ${resource.author}</p>`;
+                } else if (resource.type === 'exam') {
+                    metaInfo = `<div class="resource-meta">
+                                    <span>Grade ${resource.grade}</span>
+                                    <span>${resource.year}</span>
+                                </div>
+                                <p>${resource.pages} pages</p>`;
+                }
+                
+                card.innerHTML = `
+                    <div class="resource-img">
+                        <img src="${resource.thumbnail}" alt="${resource.title}">
+                    </div>
+                    <div class="resource-info">
+                        ${typeBadge}
+                        <h3>${resource.title}</h3>
+                        ${metaInfo}
+                        <a href="${resource.url}" class="download-btn" download>
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            });
+        }
 
-    // Optional: You can add CRUD functions here to add resources via a simple form, or store DATA in localStorage.
-    // Example: save DATA to localStorage on change:
-    function saveToLocal(){ localStorage.setItem('brainma_data', JSON.stringify(DATA)); }
-    function loadFromLocal(){ try{ const s = localStorage.getItem('brainma_data'); if(s){ DATA = JSON.parse(s); populateVideoFilters(); render(); } }catch(e){} }
-    // loadFromLocal(); // uncomment to persist between reloads
-
-    // Accessibility helpers: keyboard close modal
-    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') modalBack.style.display='none'; });
-
-  </script></body>
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up filter button
+            document.getElementById('apply-filters').addEventListener('click', filterResources);
+            
+            // Display all resources initially
+            displayResources(resources);
+            
+            // Highlight current page in navigation
+            const currentPath = window.location.hash;
+            if (currentPath) {
+                document.querySelector(`nav ul li a[href="${currentPath}"]`).classList.add('active');
+                document.querySelector('nav ul li a[href="#"]').classList.remove('active');
+            }
+        });
+    </script>
+</body>
 </html>
